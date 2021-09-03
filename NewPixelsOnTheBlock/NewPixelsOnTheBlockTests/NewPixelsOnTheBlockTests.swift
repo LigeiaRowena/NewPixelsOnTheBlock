@@ -94,11 +94,11 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     
     func testBetweenTwoColouredBLocks() {
         let block = Block(position: Position(x: .two, y: .one))
-        XCTAssertEqual(gameModel.isBetweenTwoColouredBLocks(block), false)
+        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(block), false)
 
         _ = gameModel.tintBlock(at: Position(x: .two, y: .one))
         _ = gameModel.tintBlock(at: Position(x: .two, y: .three))
-        XCTAssertEqual(gameModel.isBetweenTwoColouredBLocks(Block(position: Position(x: .two, y: .two))), true)
+        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(Block(position: Position(x: .two, y: .two))), true)
     }
     
     func testTintBlock() {

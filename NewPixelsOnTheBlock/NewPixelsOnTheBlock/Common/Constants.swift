@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import UIKit
 
 enum GameModelConstants {
+    static let blocksCount: Int = 25
     static let gameOverBlocksCount: Int = 10
     static let notColouredBlocksScore: Int = 10
     static let unitScore: Int = 5
@@ -16,4 +18,8 @@ enum GameModelConstants {
 enum RoutingConstants {
     static let HomeViewController: String = "HomeViewController"
     static let GameViewController: String = "GameViewController"
+}
+
+enum GameViewConstants {
+    static let blockSize: CGFloat = 44
 }

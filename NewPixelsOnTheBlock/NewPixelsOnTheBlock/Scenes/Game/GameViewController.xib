@@ -10,6 +10,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GameViewController" customModule="NewPixelsOnTheBlock" customModuleProvider="target">
             <connections>
+                <outlet property="matrixView" destination="oj4-bb-W3g" id="bYU-Sw-y3A"/>
                 <outlet property="view" destination="iN0-l3-epB" id="AHB-1u-6g3"/>
             </connections>
         </placeholder>
@@ -17,6 +18,13 @@
         <view contentMode="scaleToFill" id="iN0-l3-epB">
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="oj4-bb-W3g" userLabel="Matrix" customClass="MatrixView" customModule="NewPixelsOnTheBlock" customModuleProvider="target">
+                    <rect key="frame" x="97" y="338" width="220" height="220"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="0.84705882349999995" green="0.84705882349999995" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                </stackView>
+            </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <point key="canvasLocation" x="139" y="134"/>

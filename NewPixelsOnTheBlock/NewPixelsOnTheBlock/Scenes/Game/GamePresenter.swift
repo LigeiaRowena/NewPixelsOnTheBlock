@@ -17,5 +17,10 @@ class GamePresenter {
     init(with view: GamePresenterView) {
         self.view = view
     }
+    
+//    func tappedBlockView(_ block: BlockView) {
+//        
+//    }
+
 
 }

@@ -42,6 +42,10 @@ struct Block: Equatable {
     var position: Position
     var isColoured: Bool = false
     var score: Int = 0
+    
+    static func ==(lhs: Block, rhs: Block) -> Bool {
+        return lhs.position == rhs.position && lhs.isColoured == rhs.isColoured && lhs.score == rhs.score
+    }
 }
 
 /// The model engine of Game scene. It's a custom collection.
@@ -171,7 +175,7 @@ struct GameModel: Collection {
     /// Returns true if a Block element is between two coloured ones
     /// - Parameter block: The given Block element
     /// - Returns: True if a Block element is between two coloured ones
-    func isBetweenTwoColouredBLocks(_ block: Block) -> Bool {
+    func isBetweenTwoColouredBlocks(_ block: Block) -> Bool {
         // Edge case: the given Block element is located at the very right side or at the very left side, so the block is not between two coloured ones
         guard let previousY = Y(rawValue: block.position.y.rawValue - 1),
               let nextY = Y(rawValue: block.position.y.rawValue + 1) else {
