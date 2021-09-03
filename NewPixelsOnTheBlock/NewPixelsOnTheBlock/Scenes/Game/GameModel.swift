@@ -7,12 +7,6 @@
 
 import Foundation
 
-enum Constants {
-    static let gameOverBlocksCount: Int = 10
-    static let notColouredBlocksScore: Int = 10
-    static let unitScore: Int = 5
-}
-
 /// Enum referred to the horizontal position (aka the row) of the single block within the entire matrix.
 /// The offset starts from the very top-left position of the matrix.
 enum X: Int, CaseIterable {
@@ -201,7 +195,7 @@ struct GameModel: Collection {
     /// Returns true if there are at least 10 coloured blocks: in this case the game is over
     /// - Returns: True if there are at least 10 coloured blocks
     func isGameOver() -> Bool {
-        return colouredBlocks().count >= Constants.gameOverBlocksCount
+        return colouredBlocks().count >= GameModelConstants.gameOverBlocksCount
     }
     
     /// Returns the final score when the game is over
@@ -214,12 +208,12 @@ struct GameModel: Collection {
             var copy = block
             switch block.position.x {
             case .one:
-                copy.score += Constants.unitScore
+                copy.score += GameModelConstants.unitScore
             case .two, .three, .four, .five:
                 if isAboveANotColouredBlock(copy) {
-                    copy.score += Constants.unitScore
+                    copy.score += GameModelConstants.unitScore
                 } else if let colouredBlock = isAboveAColouredBlock(copy).1 {
-                    copy.score += colouredBlock.score + Constants.unitScore
+                    copy.score += colouredBlock.score + GameModelConstants.unitScore
                 }
             }
             self[block.position] = copy
@@ -228,7 +222,7 @@ struct GameModel: Collection {
         // Then we calculate and sum the partial score from the not coloured blocks
         whiteBlocksWithScore().forEach { block in
             var copy = block
-            copy.score = Constants.notColouredBlocksScore
+            copy.score = GameModelConstants.notColouredBlocksScore
             self[block.position] = copy
         }
 

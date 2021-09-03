@@ -17,7 +17,7 @@ class GameRouter {
     }
     
     static func createViewController() -> UIViewController {
-        return GameViewController(nibName: "GameViewController", bundle: nil)
+        return GameViewController(nibName: RoutingConstants.GameViewController, bundle: nil)
     }
     
 }

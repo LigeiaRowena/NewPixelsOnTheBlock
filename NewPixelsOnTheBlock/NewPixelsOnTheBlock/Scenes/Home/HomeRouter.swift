@@ -17,7 +17,7 @@ class HomeRouter {
     }
     
     static func createViewController() -> UIViewController {
-        return HomeViewController(nibName: "HomeViewController", bundle: nil)
+        return HomeViewController(nibName: RoutingConstants.HomeViewController, bundle: nil)
     }
     
     func routeToGame() {

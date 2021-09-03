@@ -22,6 +22,7 @@
 		DF44032226DBFE0200ABD872 /* GameViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF44032126DBFE0200ABD872 /* GameViewController.xib */; };
 		DF69959326DD6E0C0075A339 /* HomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF69959226DD6E0C0075A339 /* HomeRouter.swift */; };
 		DF69959526DD75990075A339 /* GameRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF69959426DD75990075A339 /* GameRouter.swift */; };
+		DFE8BC8326E23C0E00EC8671 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE8BC8226E23C0E00EC8671 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		DF44032126DBFE0200ABD872 /* GameViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameViewController.xib; sourceTree = "<group>"; };
 		DF69959226DD6E0C0075A339 /* HomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRouter.swift; sourceTree = "<group>"; };
 		DF69959426DD75990075A339 /* GameRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRouter.swift; sourceTree = "<group>"; };
+		DFE8BC8226E23C0E00EC8671 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 		DF4402E126DBED4800ABD872 /* NewPixelsOnTheBlock */ = {
 			isa = PBXGroup;
 			children = (
+				DFE8BC8126E23C0200EC8671 /* Common */,
 				DF44031726DBFC3800ABD872 /* Scenes */,
 				DF4402E226DBED4800ABD872 /* AppDelegate.swift */,
 				DF4402EB26DBED4A00ABD872 /* Assets.xcassets */,
@@ -171,6 +174,14 @@
 				DF69959426DD75990075A339 /* GameRouter.swift */,
 			);
 			path = Game;
+			sourceTree = "<group>";
+		};
+		DFE8BC8126E23C0200EC8671 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				DFE8BC8226E23C0E00EC8671 /* Constants.swift */,
+			);
+			path = Common;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,6 +320,7 @@
 				DF44031C26DBFC6D00ABD872 /* GamePresenter.swift in Sources */,
 				DF4402E726DBED4800ABD872 /* HomeViewController.swift in Sources */,
 				DF69959526DD75990075A339 /* GameRouter.swift in Sources */,
+				DFE8BC8326E23C0E00EC8671 /* Constants.swift in Sources */,
 				DF44031326DBFAC300ABD872 /* HomePresenter.swift in Sources */,
 				DF69959326DD6E0C0075A339 /* HomeRouter.swift in Sources */,
 				DF44031E26DBFC7B00ABD872 /* GameModel.swift in Sources */,
