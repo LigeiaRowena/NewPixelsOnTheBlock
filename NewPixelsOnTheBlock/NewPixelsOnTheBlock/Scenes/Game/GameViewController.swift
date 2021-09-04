@@ -41,36 +41,38 @@ class GameViewController: UIViewController {
         }
         
         // Animate the starting block and then calculate where it falls down
-        startingBlock.animateSelected{ [weak self] in
-            guard let strongSelf = self else {
-                fatalError("The model of animated BlockView is nil")
-            }
-            let positions = Array(X.allCases.reversed())
-            let availablePositions = Array(positions.suffix(from: index))
-            for x in availablePositions {
-                guard let blockView = strongSelf.matrixView.blockAt(Position(x: x, y: startingBlockModel.position.y)),
+        UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseOut) {
+            startingBlock.backgroundColor = .blue
+        } completion: { _ in
+            startingBlock.backgroundColor = .white
+            
+            let availablePositions = Array(X.allCases.prefix(upTo: index))
+            let reversedPositions = Array(availablePositions.reversed())
+            for x in reversedPositions {
+                guard let blockView = self.matrixView.blockAt(Position(x: x, y: startingBlockModel.position.y)),
                       let block = blockView.model else {
                     fatalError("No BlockView found")
                 }
+                
                 // Check if the animation is over
-                DispatchQueue.main.async {
-                    if (block.position.x == .one || strongSelf.model.isAboveAColouredBlock(block).0 || strongSelf.model.isBetweenTwoColouredBlocks(block)) {
-                        strongSelf.matrixView.isUserInteractionEnabled = true
-                        strongSelf.setViewBlockSelected(true, block: blockView)
-                        
-                        // Check if game is over
-                        if strongSelf.model.isGameOver() {
-                            strongSelf.matrixView.isUserInteractionEnabled = false
-                            strongSelf.showFinalScore()
-                        }
-                    }
+                if (block.position.x == .one || self.model.isAboveAColouredBlock(block).0 || self.model.isBetweenTwoColouredBlocks(block)) {
+                    self.matrixView.isUserInteractionEnabled = true
+                    self.setViewBlockSelected(true, block: blockView)
+                    _ = self.model.setBlockColoured(at: block.position)
+                    break
                 }
             }
-
+        }
+        
+        // Check if game is over
+        if model.isGameOver() {
+            matrixView.isUserInteractionEnabled = false
+            showFinalScore()
         }
     }
     
     func showFinalScore() {
+        //TODO: show final score in popup
     }
 }
 
@@ -87,7 +89,7 @@ extension GameViewController: BlockViewProtocol {
 /// Basically it's a vertical stackView containing 5 horizontal stackViews as arrangedSubviews
 class MatrixView: UIStackView {
     
-    /// Setup the arranged subviews of the Matrix StackView
+    /// Setups the arranged subviews of the Matrix StackView
     /// - Parameters:
     ///   - delegate: The protocol for the single BlockView
     ///   - model: The model
@@ -102,7 +104,7 @@ class MatrixView: UIStackView {
             horizontalStack.alignment = .fill
             horizontalStack.distribution = .fillEqually
             Y.allCases.forEach { y in
-                let block = Block(position: Position(x: x, y: y))
+                let block = model[Position(x: x, y: y)]
                 let blockView = BlockView(delegate: delegate, model: block)
                 horizontalStack.addArrangedSubview(blockView)
             }
@@ -124,7 +126,6 @@ class MatrixView: UIStackView {
                 }
             }
         }
-       
         return nil
     }
 }
@@ -174,16 +175,6 @@ class BlockView: UIView {
     
     public func isSelected(_ selected: Bool) {
         backgroundColor = selected ? .blue : .white
-        model?.isColoured = selected
-    }
-    
-    public func animateSelected(completion: @escaping () -> Void) {
-        UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseOut) {
-            self.backgroundColor = .blue
-        } completion: { _ in
-            self.backgroundColor = .white
-            completion()
-        }
     }
     
     private func setConstraints() {

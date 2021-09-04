@@ -189,7 +189,7 @@ struct GameModel: Collection {
     /// Sets a specific Block element with isColoured = true
     /// - Parameter position: The position of the given Block element
     /// - Returns: The just coloured Block element
-    mutating func tintBlock(at position: Position) -> Block {
+    mutating func setBlockColoured(at position: Position) -> Block {
         var block = self[position]
         block.isColoured = true
         self[position] = block
