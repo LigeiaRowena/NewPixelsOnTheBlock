@@ -42,7 +42,7 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     }
     
     func testColouredBlocks() {
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .three))
         let colouredBlocks = gameModel.colouredBlocks()
         guard let block = colouredBlocks.first else {
             XCTFail()
@@ -53,7 +53,7 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     }
     
     func testWhiteBlocksWithScore() {
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .one))
         guard let block = gameModel.whiteBlocksWithScore().first else {
             XCTFail()
             return
@@ -61,7 +61,7 @@ class NewPixelsOnTheBlockTests: XCTestCase {
         XCTAssertEqual(block.position.x, .one)
         XCTAssertEqual(block.position.y, .one)
         
-        _ = gameModel.tintBlock(at: Position(x: .four, y: .two))
+        _ = gameModel.setBlockColoured(at: Position(x: .four, y: .two))
         XCTAssertEqual(gameModel.whiteBlocksWithScore().count, 4)
     }
     
@@ -69,7 +69,7 @@ class NewPixelsOnTheBlockTests: XCTestCase {
         let block = Block(position: Position(x: .five, y: .one))
         XCTAssertEqual(gameModel.isBelowAColouredBlock(block), false)
         
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .one))
         XCTAssertEqual(gameModel.isBelowAColouredBlock(Block(position: Position(x: .one, y: .one))), true)
         XCTAssertEqual(gameModel.isBelowAColouredBlock(Block(position: Position(x: .two, y: .one))), true)
     }
@@ -79,13 +79,13 @@ class NewPixelsOnTheBlockTests: XCTestCase {
         XCTAssertEqual(gameModel.isAboveAColouredBlock(block).0, false)
         XCTAssertNil(gameModel.isAboveAColouredBlock(block).1)
 
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .one))
         let anotherBlock = Block(position: Position(x: .two, y: .one))
         XCTAssertEqual(gameModel.isAboveAColouredBlock(anotherBlock).0, true)
     }
     
     func testAboveANotColouredBlock() {
-        let block = gameModel.tintBlock(at: Position(x: .three, y: .four))
+        let block = gameModel.setBlockColoured(at: Position(x: .three, y: .four))
         XCTAssertEqual(gameModel.isAboveANotColouredBlock(block), true)
         
         let anotherBlock = Block(position: Position(x: .one, y: .four))
@@ -96,28 +96,28 @@ class NewPixelsOnTheBlockTests: XCTestCase {
         let block = Block(position: Position(x: .two, y: .one))
         XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(block), false)
 
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .one))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .three))
         XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(Block(position: Position(x: .two, y: .two))), true)
     }
     
     func testTintBlock() {
-        let block = gameModel.tintBlock(at: Position(x: .one, y: .one))
+        let block = gameModel.setBlockColoured(at: Position(x: .one, y: .one))
         XCTAssertEqual(block.isColoured, true)
         XCTAssertEqual(Block(position: Position(x: .two, y: .two)).isColoured, false)
     }
 
     func testFinalScoreSmaller() {
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .one))
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .one))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .two))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .four))
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .one))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .two))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .four))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .five))
         
         XCTAssertEqual(gameModel.isGameOver(), true)
         
@@ -126,16 +126,16 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     }
     
     func testFinalScoreBigger() {
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .one, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .two, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .three, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .four, y: .three))
-        _ = gameModel.tintBlock(at: Position(x: .four, y: .four))
-        _ = gameModel.tintBlock(at: Position(x: .four, y: .five))
-        _ = gameModel.tintBlock(at: Position(x: .five, y: .four))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .one, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .two, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .three, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .four, y: .three))
+        _ = gameModel.setBlockColoured(at: Position(x: .four, y: .four))
+        _ = gameModel.setBlockColoured(at: Position(x: .four, y: .five))
+        _ = gameModel.setBlockColoured(at: Position(x: .five, y: .four))
         
         XCTAssertEqual(gameModel.isGameOver(), true)
         
