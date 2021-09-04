@@ -59,20 +59,26 @@ class GameViewController: UIViewController {
                     self.matrixView.isUserInteractionEnabled = true
                     self.setViewBlockSelected(true, block: blockView)
                     _ = self.model.setBlockColoured(at: block.position)
+                    print(self.model.colouredBlocks())
                     break
                 }
             }
-        }
-        
-        // Check if game is over
-        if model.isGameOver() {
-            matrixView.isUserInteractionEnabled = false
-            showFinalScore()
+            
+            // Check if game is over
+            if self.model.isGameOver() {
+                self.matrixView.isUserInteractionEnabled = false
+                self.showFinalScore()
+            }
         }
     }
     
     func showFinalScore() {
-        //TODO: show final score in popup
+        let finalScore = model.finalScore()
+        let alert = UIAlertController(title: "Game over!", message: "Your final score is \(finalScore)", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
+            self.router.routeToHome()
+        }))
+        present(alert, animated: true)
     }
 }
 

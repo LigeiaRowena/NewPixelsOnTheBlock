@@ -20,4 +20,8 @@ class GameRouter {
         return GameViewController(nibName: RoutingConstants.GameViewController, bundle: nil)
     }
     
+    func routeToHome() {
+        navigationController?.popViewController(animated: true)
+    }
+    
 }
