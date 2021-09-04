@@ -148,14 +148,14 @@ struct GameModel: Collection {
     }
     
     /// Returns true if a Block element is above a coloured one
-    /// - Parameter block: The given Block element
+    /// - Parameter position: The position of the given Block element
     /// - Returns: A tuple with a flag=true if a Block element is above a coloured one, and the coloured block itself if any
-    public func isAboveAColouredBlock(_ block: Block) -> (Bool, Block?) {
+    public func isAboveAColouredBlock(_ position: Position) -> (Bool, Block?) {
         // Edge case: the given Block element is located at the very bottom, so there's no other block below it
-        guard let previousX = X(rawValue: block.position.x.rawValue - 1) else {
+        guard let previousX = X(rawValue: position.x.rawValue - 1) else {
             return (false, nil)
         }
-        let anotherBlock = self[Position(x: previousX, y: block.position.y)]
+        let anotherBlock = self[Position(x: previousX, y: position.y)]
         let isAboveAColouredBlock = anotherBlock.isColoured
         return (isAboveAColouredBlock, isAboveAColouredBlock ? anotherBlock : nil)
     }
@@ -173,16 +173,16 @@ struct GameModel: Collection {
     }
     
     /// Returns true if a Block element is between two coloured ones
-    /// - Parameter block: The given Block element
+    /// - Parameter position: The position of the given Block element
     /// - Returns: True if a Block element is between two coloured ones
-    public func isBetweenTwoColouredBlocks(_ block: Block) -> Bool {
+    public func isBetweenTwoColouredBlocks(_ position: Position) -> Bool {
         // Edge case: the given Block element is located at the very right side or at the very left side, so the block is not between two coloured ones
-        guard let previousY = Y(rawValue: block.position.y.rawValue - 1),
-              let nextY = Y(rawValue: block.position.y.rawValue + 1) else {
+        guard let previousY = Y(rawValue: position.y.rawValue - 1),
+              let nextY = Y(rawValue: position.y.rawValue + 1) else {
             return false
         }
-        let previousBlock = self[Position(x: block.position.x, y: previousY)]
-        let nextBlock = self[Position(x: block.position.x, y: nextY)]
+        let previousBlock = self[Position(x: position.x, y: previousY)]
+        let nextBlock = self[Position(x: position.x, y: nextY)]
         return previousBlock.isColoured && nextBlock.isColoured
     }
     
@@ -216,7 +216,7 @@ struct GameModel: Collection {
             case .two, .three, .four, .five:
                 if isAboveANotColouredBlock(copy) {
                     copy.score += GameModelConstants.unitScore
-                } else if let colouredBlock = isAboveAColouredBlock(copy).1 {
+                } else if let colouredBlock = isAboveAColouredBlock(copy.position).1 {
                     copy.score += colouredBlock.score + GameModelConstants.unitScore
                 }
             }

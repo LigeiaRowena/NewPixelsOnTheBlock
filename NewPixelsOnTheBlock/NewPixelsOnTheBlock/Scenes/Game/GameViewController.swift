@@ -13,8 +13,8 @@ class GameViewController: UIViewController {
     
     lazy var presenter = GamePresenter(with: self)
     lazy var router = GameRouter(with: navigationController)
-    var model = GameModel()
-    @IBOutlet weak var matrixView: MatrixView!
+    @IBOutlet weak var matrixView: UIStackView!
+    var blockViews = [BlockView]()
     
     //MARK: ViewController lifecycle
 
@@ -24,87 +24,15 @@ class GameViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        matrixView.setupBlocks(delegate: self, model: model)
+        setupMatrix()
     }
     
     //MARK: Private
     
-    /// Set coloured a given BlockView permanently, at the end of the animation of the block falling down
-    /// - Parameter blockView: The given BlockView
-    private func setViewBlockColoured(_ blockView: BlockView) {
-        blockView.isColoured()
-    }
-    
-    /// Animates the touched block by falling it down
-    /// - Parameter startingBlock: The touched block
-    func animateBlocks(_ startingBlockView: BlockView) {
-        matrixView.isUserInteractionEnabled = false
-        guard let startingBlock = startingBlockView.model,
-              let index = X.allCases.firstIndex(of: startingBlock.position.x) else {
-            fatalError("The model of starting BlockView is nil")
-        }
-        
-        // Animate the starting block and then calculate where it falls down
-        UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseOut) {
-            startingBlockView.backgroundColor = .blue
-        } completion: { _ in
-            startingBlockView.backgroundColor = .white
-            
-            let availablePositions = Array(X.allCases.prefix(upTo: index).reversed())
-            for x in availablePositions {
-                guard let blockView = self.matrixView.blockViewAt(Position(x: x, y: startingBlock.position.y)),
-                      let block = blockView.model else {
-                    fatalError("No BlockView found")
-                }
-                
-                // Check if the animation is over
-                if (block.position.x == .one || self.model.isAboveAColouredBlock(block).0 || self.model.isBetweenTwoColouredBlocks(block)) {
-                    self.matrixView.isUserInteractionEnabled = true
-                    self.setViewBlockColoured(blockView)
-                    _ = self.model.setBlockColoured(at: block.position)
-                    break
-                }
-            }
-            
-            // Check if game is over
-            if self.model.isGameOver() {
-                self.matrixView.isUserInteractionEnabled = false
-                self.showFinalScore()
-            }
-        }
-    }
-    
-    /// Shows the final score on the screen
-    private func showFinalScore() {
-        let finalScore = model.finalScore()
-        let alert = UIAlertController(title: "Game over!", message: "Your final score is \(finalScore)", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
-            self.router.routeToHome()
-        }))
-        present(alert, animated: true)
-    }
-}
-
-extension GameViewController: GamePresenterView {
-}
-
-extension GameViewController: BlockViewProtocol {
-    func tapBlockView(_ block: BlockView) {
-        animateBlocks(block)
-    }
-}
-
-/// The view referred to the entire Matrix of 25 BlockView elements.
-/// Basically it's a vertical stackView containing 5 horizontal stackViews as arrangedSubviews
-class MatrixView: UIStackView {
-    
-    /// Setups the arranged subviews of the Matrix StackView
-    /// - Parameters:
-    ///   - delegate: The protocol for the single BlockView
-    ///   - model: The model
-    public func setupBlocks(delegate: BlockViewProtocol, model: GameModel) {
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.black.cgColor
+    /// Setups the arranged subviews of the matrix StackView
+    private func setupMatrix() {
+        matrixView.layer.borderWidth = 1
+        matrixView.layer.borderColor = UIColor.black.cgColor
                 
         Array(X.allCases.reversed()).forEach { x in
             let horizontalStack = UIStackView(frame: .zero)
@@ -113,46 +41,58 @@ class MatrixView: UIStackView {
             horizontalStack.alignment = .fill
             horizontalStack.distribution = .fillEqually
             Y.allCases.forEach { y in
-                let block = model[Position(x: x, y: y)]
-                let blockView = BlockView(delegate: delegate, model: block)
+                let blockView = BlockView(presenter: presenter, position: Position(x: x, y: y))
+                blockViews.append(blockView)
                 horizontalStack.addArrangedSubview(blockView)
             }
-            addArrangedSubview(horizontalStack)
+            matrixView.addArrangedSubview(horizontalStack)
         }
-    }
-    
-    /// Returns a BlockView at a specific position
-    /// - Parameter position: The given position
-    /// - Returns: The BlockView at a specific position, if any
-    public func blockViewAt(_ position: Position) -> BlockView? {
-        guard let horizontalStackViews = arrangedSubviews as? [UIStackView] else {
-            return nil
-        }
-        for horizontalStackView in horizontalStackViews {
-            if let blockViews = horizontalStackView.arrangedSubviews as? [BlockView],
-               let blockView = blockViews.first(where: { $0.model?.position == position }) {
-                return blockView
-            }
-        }
-        return nil
     }
 }
 
-/// Protocol that describes any interaction between the single BlockView and GameViewController
-protocol BlockViewProtocol: AnyObject {
-    func tapBlockView(_ block: BlockView)
+extension GameViewController: GamePresenterView {
+    
+    func presentAnimation(_ sender: BlockView, completion: @escaping () -> Void) {
+        matrixView.isUserInteractionEnabled = false
+        
+        UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseOut) {
+            sender.backgroundColor = .blue
+        } completion: { _ in
+            sender.backgroundColor = .white
+            completion()
+        }
+    }
+    
+    func blockViewAt(_ position: Position) -> BlockView? {
+        return blockViews.first(where: { $0.position == position })
+    }
+    
+    func stopAnimation(_ sender: BlockView) {
+        matrixView.isUserInteractionEnabled = true
+        sender.isColoured()
+    }
+    
+    func presentFinalScore(finalScore: Int) {
+        matrixView.isUserInteractionEnabled = false
+        let alert = UIAlertController(title: "Game over!", message: "Your final score is \(finalScore)", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
+            self.router.routeToHome()
+        }))
+        present(alert, animated: true)
+    }
+
 }
 
 /// The view referred to the single Block element of the game
 class BlockView: UIView {
     
-    weak var delegate: BlockViewProtocol?
-    var model: Block?
+    var position: Position?
+    weak var presenter: GamePresenter?
     
-    init(delegate: BlockViewProtocol, model: Block) {
+    init(presenter: GamePresenter, position: Position) {
         super.init(frame: .zero)
-        self.delegate = delegate
-        self.model = model
+        self.position = position
+        self.presenter = presenter
         self.backgroundColor = .white
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.black.cgColor
@@ -183,7 +123,7 @@ class BlockView: UIView {
     
     @objc
     private func tapGesture(tapGestureRecognizer: UITapGestureRecognizer) {
-        delegate?.tapBlockView(self)
+        presenter?.tapBlockView(self)
     }
     
 }

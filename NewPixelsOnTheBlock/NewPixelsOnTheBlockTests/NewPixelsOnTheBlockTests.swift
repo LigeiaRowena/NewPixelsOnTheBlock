@@ -75,13 +75,12 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     }
     
     func testAboveAColouredBlock() {
-        let block = Block(position: Position(x: .one, y: .one))
-        XCTAssertEqual(gameModel.isAboveAColouredBlock(block).0, false)
-        XCTAssertNil(gameModel.isAboveAColouredBlock(block).1)
+        let position = Position(x: .one, y: .one)
+        XCTAssertEqual(gameModel.isAboveAColouredBlock(position).0, false)
+        XCTAssertNil(gameModel.isAboveAColouredBlock(position).1)
 
         _ = gameModel.setBlockColoured(at: Position(x: .one, y: .one))
-        let anotherBlock = Block(position: Position(x: .two, y: .one))
-        XCTAssertEqual(gameModel.isAboveAColouredBlock(anotherBlock).0, true)
+        XCTAssertEqual(gameModel.isAboveAColouredBlock(Position(x: .two, y: .one)).0, true)
     }
     
     func testAboveANotColouredBlock() {
@@ -93,12 +92,11 @@ class NewPixelsOnTheBlockTests: XCTestCase {
     }
     
     func testBetweenTwoColouredBLocks() {
-        let block = Block(position: Position(x: .two, y: .one))
-        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(block), false)
+        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(Position(x: .two, y: .one)), false)
 
         _ = gameModel.setBlockColoured(at: Position(x: .two, y: .one))
         _ = gameModel.setBlockColoured(at: Position(x: .two, y: .three))
-        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(Block(position: Position(x: .two, y: .two))), true)
+        XCTAssertEqual(gameModel.isBetweenTwoColouredBlocks(Position(x: .two, y: .two)), true)
     }
     
     func testTintBlock() {
