@@ -9,10 +9,14 @@ import UIKit
 
 class GameViewController: UIViewController {
     
+    //MARK: Properties
+    
     lazy var presenter = GamePresenter(with: self)
     lazy var router = GameRouter(with: navigationController)
     var model = GameModel()
     @IBOutlet weak var matrixView: MatrixView!
+    
+    //MARK: ViewController lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,33 +27,32 @@ class GameViewController: UIViewController {
         matrixView.setupBlocks(delegate: self, model: model)
     }
     
-    /// Set selected a given BlockView permanently (at the end of the game)
-    /// - Parameters:
-    ///   - selected: If true the block is selected
-    ///   - block: The given block
-    func setViewBlockSelected(_ selected: Bool, block: BlockView) {
-        block.isSelected(selected)
+    //MARK: Private
+    
+    /// Set coloured a given BlockView permanently, at the end of the animation of the block falling down
+    /// - Parameter blockView: The given BlockView
+    private func setViewBlockColoured(_ blockView: BlockView) {
+        blockView.isColoured()
     }
     
-    /// Animates the touched block and then falls down
+    /// Animates the touched block by falling it down
     /// - Parameter startingBlock: The touched block
-    func animateBlocks(_ startingBlock: BlockView) {
+    func animateBlocks(_ startingBlockView: BlockView) {
         matrixView.isUserInteractionEnabled = false
-        guard let startingBlockModel = startingBlock.model,
-              let index = X.allCases.firstIndex(of: startingBlockModel.position.x) else {
+        guard let startingBlock = startingBlockView.model,
+              let index = X.allCases.firstIndex(of: startingBlock.position.x) else {
             fatalError("The model of starting BlockView is nil")
         }
         
         // Animate the starting block and then calculate where it falls down
         UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseOut) {
-            startingBlock.backgroundColor = .blue
+            startingBlockView.backgroundColor = .blue
         } completion: { _ in
-            startingBlock.backgroundColor = .white
+            startingBlockView.backgroundColor = .white
             
-            let availablePositions = Array(X.allCases.prefix(upTo: index))
-            let reversedPositions = Array(availablePositions.reversed())
-            for x in reversedPositions {
-                guard let blockView = self.matrixView.blockAt(Position(x: x, y: startingBlockModel.position.y)),
+            let availablePositions = Array(X.allCases.prefix(upTo: index).reversed())
+            for x in availablePositions {
+                guard let blockView = self.matrixView.blockViewAt(Position(x: x, y: startingBlock.position.y)),
                       let block = blockView.model else {
                     fatalError("No BlockView found")
                 }
@@ -57,9 +60,8 @@ class GameViewController: UIViewController {
                 // Check if the animation is over
                 if (block.position.x == .one || self.model.isAboveAColouredBlock(block).0 || self.model.isBetweenTwoColouredBlocks(block)) {
                     self.matrixView.isUserInteractionEnabled = true
-                    self.setViewBlockSelected(true, block: blockView)
+                    self.setViewBlockColoured(blockView)
                     _ = self.model.setBlockColoured(at: block.position)
-                    print(self.model.colouredBlocks())
                     break
                 }
             }
@@ -72,7 +74,8 @@ class GameViewController: UIViewController {
         }
     }
     
-    func showFinalScore() {
+    /// Shows the final score on the screen
+    private func showFinalScore() {
         let finalScore = model.finalScore()
         let alert = UIAlertController(title: "Game over!", message: "Your final score is \(finalScore)", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { _ in
@@ -91,7 +94,7 @@ extension GameViewController: BlockViewProtocol {
     }
 }
 
-/// The view referred to the entire Matrix of 25 Block elements.
+/// The view referred to the entire Matrix of 25 BlockView elements.
 /// Basically it's a vertical stackView containing 5 horizontal stackViews as arrangedSubviews
 class MatrixView: UIStackView {
     
@@ -121,15 +124,14 @@ class MatrixView: UIStackView {
     /// Returns a BlockView at a specific position
     /// - Parameter position: The given position
     /// - Returns: The BlockView at a specific position, if any
-    public func blockAt(_ position: Position) -> BlockView? {
+    public func blockViewAt(_ position: Position) -> BlockView? {
         guard let horizontalStackViews = arrangedSubviews as? [UIStackView] else {
             return nil
         }
         for horizontalStackView in horizontalStackViews {
-            if let blockViews = horizontalStackView.arrangedSubviews as? [BlockView] {
-                if let blockView = blockViews.first(where: { $0.model?.position == position }) {
-                    return blockView
-                }
+            if let blockViews = horizontalStackView.arrangedSubviews as? [BlockView],
+               let blockView = blockViews.first(where: { $0.model?.position == position }) {
+                return blockView
             }
         }
         return nil
@@ -147,15 +149,6 @@ class BlockView: UIView {
     weak var delegate: BlockViewProtocol?
     var model: Block?
     
-    //temp
-    var label: UILabel = {
-        let label = UILabel(frame: .zero)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = .black
-        label.numberOfLines = 0
-        return label
-    }()
-    
     init(delegate: BlockViewProtocol, model: Block) {
         super.init(frame: .zero)
         self.delegate = delegate
@@ -165,22 +158,14 @@ class BlockView: UIView {
         self.layer.borderColor = UIColor.black.cgColor
         setTapGesture()
         setConstraints()
-        
-        //temp
-        label.text = "x=\(model.position.x.rawValue) \ny=\(model.position.y.rawValue)"
-        addSubview(label)
-        NSLayoutConstraint.activate([
-            centerXAnchor.constraint(equalTo: centerXAnchor),
-            centerYAnchor.constraint(equalTo: centerYAnchor)
-        ])
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func isSelected(_ selected: Bool) {
-        backgroundColor = selected ? .blue : .white
+    public func isColoured() {
+        backgroundColor = .blue
     }
     
     private func setConstraints() {

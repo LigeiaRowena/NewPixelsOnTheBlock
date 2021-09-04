@@ -111,25 +111,25 @@ struct GameModel: Collection {
         }
     }
     
-    //MARK: Utility functions
+    //MARK: Public utility functions
         
     /// Returns an array of only coloured Block elements
     /// - Returns: An array of Block elements with isColoured = true
-    func colouredBlocks() -> [Block] {
+    public func colouredBlocks() -> [Block] {
         return matrix.filter{ $0.isColoured == true }
     }
     
     /// Returns an array of only not coloured Block elements for the entire matrix of blocks, each one located below a coloured Block element
     /// According to the business logic of this game, a not coloured block below a coloured one has score = .ten
     /// - Returns: An array of Block elements with isColoured = false and each one below a Block element with isColoured = true
-    func whiteBlocksWithScore() -> [Block] {
+    public func whiteBlocksWithScore() -> [Block] {
         return matrix.filter{ $0.isColoured == false && isBelowAColouredBlock($0)}
     }
     
     /// Returns true if a Block element is below a coloured one recursively, so even by skipping other not coloured blocks on the same Y position
     /// - Parameter block: The given Block element
     /// - Returns: True if a Block element is below a coloured one recursively
-    func isBelowAColouredBlock(_ block: Block) -> Bool {
+    public func isBelowAColouredBlock(_ block: Block) -> Bool {
         guard let index = X.allCases.firstIndex(of: block.position.x) else {
             fatalError("The given Block doesn't have a proper X position")
         }
@@ -150,7 +150,7 @@ struct GameModel: Collection {
     /// Returns true if a Block element is above a coloured one
     /// - Parameter block: The given Block element
     /// - Returns: A tuple with a flag=true if a Block element is above a coloured one, and the coloured block itself if any
-    func isAboveAColouredBlock(_ block: Block) -> (Bool, Block?) {
+    public func isAboveAColouredBlock(_ block: Block) -> (Bool, Block?) {
         // Edge case: the given Block element is located at the very bottom, so there's no other block below it
         guard let previousX = X(rawValue: block.position.x.rawValue - 1) else {
             return (false, nil)
@@ -163,7 +163,7 @@ struct GameModel: Collection {
     /// Returns true if a Block element is above a not coloured one
     /// - Parameter block: The given Block element
     /// - Returns: True if a Block element is above a not coloured one
-    func isAboveANotColouredBlock(_ block: Block) -> Bool {
+    public func isAboveANotColouredBlock(_ block: Block) -> Bool {
         // Edge case: the given Block element is located at the very bottom, so there's no other block below it
         guard let previousX = X(rawValue: block.position.x.rawValue - 1) else {
             return false
@@ -175,7 +175,7 @@ struct GameModel: Collection {
     /// Returns true if a Block element is between two coloured ones
     /// - Parameter block: The given Block element
     /// - Returns: True if a Block element is between two coloured ones
-    func isBetweenTwoColouredBlocks(_ block: Block) -> Bool {
+    public func isBetweenTwoColouredBlocks(_ block: Block) -> Bool {
         // Edge case: the given Block element is located at the very right side or at the very left side, so the block is not between two coloured ones
         guard let previousY = Y(rawValue: block.position.y.rawValue - 1),
               let nextY = Y(rawValue: block.position.y.rawValue + 1) else {
@@ -189,7 +189,7 @@ struct GameModel: Collection {
     /// Sets a specific Block element with isColoured = true
     /// - Parameter position: The position of the given Block element
     /// - Returns: The just coloured Block element
-    mutating func setBlockColoured(at position: Position) -> Block {
+    public mutating func setBlockColoured(at position: Position) -> Block {
         var block = self[position]
         block.isColoured = true
         self[position] = block
@@ -198,13 +198,13 @@ struct GameModel: Collection {
 
     /// Returns true if there are at least 10 coloured blocks: in this case the game is over
     /// - Returns: True if there are at least 10 coloured blocks
-    func isGameOver() -> Bool {
+    public func isGameOver() -> Bool {
         return colouredBlocks().count >= GameModelConstants.gameOverBlocksCount
     }
     
     /// Returns the final score when the game is over
     /// - Returns: The final score
-    mutating func finalScore() -> Int {
+    public mutating func finalScore() -> Int {
         var score: Int = 0
         
         // First we calcolate the partial score from the coloured blocks
@@ -223,7 +223,7 @@ struct GameModel: Collection {
             self[block.position] = copy
         }
                 
-        // Then we calculate and sum the partial score from the not coloured blocks
+        // Then we calculate the partial score from the not coloured blocks
         whiteBlocksWithScore().forEach { block in
             var copy = block
             copy.score = GameModelConstants.notColouredBlocksScore
